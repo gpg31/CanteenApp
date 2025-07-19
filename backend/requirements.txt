@@ -1,0 +1,11 @@
+fastapi==0.100.0
+uvicorn==0.23.1
+sqlalchemy==2.0.19
+pg8000==1.29.8  # Pure Python PostgreSQL adapter
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+pydantic==2.1.1
+python-dotenv==1.0.0
+alembic==1.11.1
+websockets==11.0.3
