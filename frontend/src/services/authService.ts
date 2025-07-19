@@ -1,5 +1,6 @@
 import api from '@/lib/api';
 import axios from 'axios';
+import { User } from '@/store/useAuthStore';
 
 export interface AuthCredentials {
   email: string;
@@ -59,11 +60,11 @@ const authService = {
     }
   },
 
-  verifyToken: async (): Promise<{ valid: boolean; user?: any }> => {
+  verifyToken: async (): Promise<{ valid: boolean; user?: User }> => {
     try {
       const response = await api.get('/auth/verify');
       return { valid: true, user: response.data };
-    } catch (error) {
+    } catch {
       return { valid: false };
     }
   }
