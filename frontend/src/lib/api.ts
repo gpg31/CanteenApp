@@ -1,26 +1,21 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/useAuthStore';
 
-const API_URL = 'http://localhost:3005/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Required for CORS with credentials
 });
 
-// Add a request interceptor to attach auth token
 api.interceptors.request.use(
   (config) => {
-    // Get the auth token from Zustand store
-    const token = useAuthStore.getState().token;
-    
+    const { token } = useAuthStore.getState();
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    
     return config;
   },
   (error) => {

@@ -1,74 +1,66 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/store/useAuthStore'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/useAuthStore';
+import authService from '@/services/authService';
 
 export default function RegisterForm() {
-  const router = useRouter()
-  const login = useAuthStore(state => state.login)
+  const router = useRouter();
+  const login = useAuthStore(state => state.login);
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
     password: '',
     confirmPassword: '',
     role: 'customer' as 'customer' | 'vendor' | 'admin'
-  })
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      return
+      setError('Passwords do not match');
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          full_name: formData.full_name,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
-        }),
-      })
+      const authResponse = await authService.register({
+        full_name: formData.full_name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      });
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to register')
-      }
-
-      // Log the user in automatically
-      login(data.user, data.token)
-
-      // Redirect based on user role
-      switch (data.user.role) {
-        case 'customer':
-          router.push('/menu')
-          break
-        case 'vendor':
-          router.push('/vendor/dashboard')
-          break
-        case 'admin':
-          router.push('/admin/dashboard')
-          break
-        default:
-          router.push('/menu')
+      if (authResponse && authResponse.user && authResponse.token) {
+        login(authResponse.user, authResponse.token);
+        
+        // Redirect based on user role
+        switch (authResponse.user.role) {
+          case 'customer':
+            router.push('/menu');
+            break;
+          case 'vendor':
+            router.push('/vendor/dashboard');
+            break;
+          case 'admin':
+            router.push('/admin/dashboard');
+            break;
+          default:
+            router.push('/menu');
+        }
+      } else {
+        setError('Registration failed. Please try again.');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred during registration.');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 

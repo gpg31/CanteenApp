@@ -1,8 +1,0 @@
-{
-  "scripts": {
-    "frontend": "cd ../frontend && npm run dev",
-    "backend": "npm run start",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "start": "node server.js"
-  }
-}
