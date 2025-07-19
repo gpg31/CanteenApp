@@ -1,6 +1,4 @@
 import { create } from 'zustand';
-import { AuthResponse } from '@/services/authService';
-import { Session } from '@supabase/supabase-js';
 
 export interface User {
   id: string;
@@ -13,24 +11,24 @@ export interface User {
 
 interface AuthStore {
   user: User | null;
-  session: Session | null;
+  token: string | null;
   isAuthenticated: boolean;
-  setAuth: (auth: AuthResponse | null) => void;
-  clearAuth: () => void;
+  login: (user: User, token: string) => void;
+  logout: () => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
-  session: null,
+  token: null,
   isAuthenticated: false,
-  setAuth: (auth) => set({
-    user: auth?.user || null,
-    session: auth?.session || null,
-    isAuthenticated: !!auth?.user
+  login: (user, token) => set({
+    user,
+    token,
+    isAuthenticated: true
   }),
-  clearAuth: () => set({
+  logout: () => set({
     user: null,
-    session: null,
+    token: null,
     isAuthenticated: false
   })
 }));

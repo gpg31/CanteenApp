@@ -8,16 +8,20 @@ export interface AuthCredentials {
 
 export interface AuthResponse {
   user: {
-    user_id: string;
+    id: string;
     full_name: string;
     email: string;
-    role: string;
+    role: 'customer' | 'vendor' | 'admin';
+    vendor_id?: string;
+    name?: string;
+    phone?: string;
   };
   token: string;
 }
 
 export interface RegisterData extends AuthCredentials {
   full_name: string;
+  role: 'customer' | 'vendor' | 'admin';
 }
 
 const authService = {
